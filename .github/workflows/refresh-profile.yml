@@ -1,7 +1,7 @@
-name: Refresh profile telemetry
+name: Refresh profile stats
 
-# Rebuilds the live stat cards, 3D contribution skyline and contribution snake
-# every day, and publishes them to the `output` branch (main stays clean).
+# Rebuilds the GitHub stat cards every day and publishes them to the
+# `output` branch, so the main branch stays clean.
 
 on:
   schedule:
@@ -35,29 +35,14 @@ jobs:
           PROFILE_USER: ${{ github.repository_owner }}
         run: python scripts/live_stats.py
 
-      - name: Build contribution snake
-        uses: Platane/snk/svg-only@v3
-        with:
-          github_user_name: ${{ github.repository_owner }}
-          outputs: |
-            assets/generated/snake.svg?palette=github-light&color_snake=#8b5cf6
-            assets/generated/snake-dark.svg?palette=github-dark&color_snake=#22d3ee&color_dots=#161b22,#0b3b4a,#0e7490,#06b6d4,#67e8f9
-
-      - name: Build 3D contribution skyline
-        uses: yoshi389111/github-profile-3d-contrib@v0.9.3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          USERNAME: ${{ github.repository_owner }}
-
       - name: Publish to output branch
         run: |
           mkdir -p /tmp/out
           cp assets/generated/*.svg /tmp/out/
-          cp -r profile-3d-contrib /tmp/out/
           cd /tmp/out
           git init -q -b output
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -qm "Refresh profile telemetry"
+          git commit -qm "Refresh profile stats"
           git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" output

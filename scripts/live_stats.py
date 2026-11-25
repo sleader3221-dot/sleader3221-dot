@@ -21,9 +21,11 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "assets" / "generated"
 USER = os.environ.get("PROFILE_USER", "sleader3221-dot")
 
-SURFACE = "#0d1424"
-CYAN, VIOLET, PINK, GREEN, AMBER = "#22d3ee", "#a78bfa", "#f472b6", "#34d399", "#fbbf24"
-TEXT, MUTED = "#e5e7eb", "#94a3b8"
+SURFACE = "#0d1117"
+BORDER = "#30363d"
+ACCENT = "#58a6ff"
+CYAN = VIOLET = PINK = GREEN = AMBER = ACCENT
+TEXT, MUTED = "#f0f6fc", "#8b949e"
 SANS = "'Segoe UI', Ubuntu, 'Helvetica Neue', Arial, sans-serif"
 MONO = "'JetBrains Mono', 'Fira Code', Consolas, monospace"
 
@@ -129,26 +131,22 @@ def overview_svg(u: dict) -> str:
         col, row = i % 4, i // 4
         x, y = 30 + col * 138, 78 + row * 82
         cells.append(
-            f'<g class="cell" style="animation-delay:{i * 0.12:.2f}s" transform="translate({x} {y})">'
-            f'<rect width="128" height="70" rx="10" fill="{color}" fill-opacity=".07" stroke="{color}" stroke-opacity=".3"/>'
-            f'<text x="12" y="34" class="v" fill="{color}">{escape(str(value))}</text>'
+            f'<g class="cell" transform="translate({x} {y})">'
+            f'<rect width="128" height="70" rx="8" fill="#161b22" stroke="{BORDER}"/>'
+            f'<text x="12" y="34" class="v">{escape(str(value))}</text>'
             f'<text x="12" y="56" class="l">{escape(label)}</text></g>')
     updated = datetime.now(timezone.utc).strftime("%d %b %Y")
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="600" height="320" viewBox="0 0 600 320" role="img" aria-label="GitHub stats">
 <defs>
   <linearGradient id="e" x1="0" x2="1"><stop offset="0" stop-color="{CYAN}"/><stop offset=".5" stop-color="{VIOLET}"/><stop offset="1" stop-color="{PINK}"/></linearGradient>
-  <linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{CYAN}" stop-opacity=".35"/><stop offset="1" stop-color="{CYAN}" stop-opacity="0"/></linearGradient>
+  <linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{ACCENT}" stop-opacity=".25"/><stop offset="1" stop-color="{CYAN}" stop-opacity="0"/></linearGradient>
 </defs>
 <style>
-  .h {{ font: 800 20px {SANS}; fill:{TEXT}; }} .sub {{ font: 500 12px {MONO}; fill:{MUTED}; }}
-  .v {{ font: 800 24px {SANS}; }} .l {{ font: 500 11.5px {SANS}; fill:{MUTED}; }}
-  .cell {{ opacity:0; animation: pop .6s ease-out forwards; }}
-  .spark {{ stroke-dasharray: 1400; stroke-dashoffset: 1400; animation: draw 2.5s .8s ease-out forwards; }}
-  @keyframes pop {{ from {{ opacity:0; transform-box: fill-box; }} to {{ opacity:1; }} }}
-  @keyframes draw {{ to {{ stroke-dashoffset: 0; }} }}
+  .h {{ font: 600 18px {SANS}; fill:{TEXT}; }} .sub {{ font: 500 12px {MONO}; fill:{MUTED}; }}
+  .v {{ font: 700 24px {SANS}; fill:{TEXT}; }} .l {{ font: 500 11.5px {SANS}; fill:{MUTED}; }}
 </style>
-<rect x="1" y="1" width="598" height="318" rx="16" fill="{SURFACE}" stroke="url(#e)" stroke-opacity=".5"/>
-<text x="30" y="44" class="h">GitHub Telemetry</text>
+<rect x="1" y="1" width="598" height="318" rx="16" fill="{SURFACE}" stroke="{BORDER}"/>
+<text x="30" y="44" class="h">GitHub Activity</text>
 <text x="570" y="44" text-anchor="end" class="sub">updated {updated}</text>
 {''.join(cells)}
 <polyline points="30,290 {pts} 570,290" fill="url(#a)" stroke="none"/>
@@ -178,30 +176,25 @@ def languages_svg(u: dict) -> str:
         rx, ry = 30 + col * 275, 118 + row * 46
         pct = 100 * size / total
         rows.append(
-            f'<g class="row" style="animation-delay:{0.3 + i * 0.1:.2f}s" transform="translate({rx} {ry})">'
+            f'<g class="row" transform="translate({rx} {ry})">'
             f'<circle cx="7" cy="-5" r="6" fill="{colors[name]}"/>'
             f'<text x="22" y="0" class="n">{escape(name)}</text>'
             f'<text x="255" y="0" text-anchor="end" class="p">{pct:.1f}%</text>'
             f'<rect x="22" y="9" width="233" height="4" rx="2" fill="#1c2740"/>'
-            f'<rect x="22" y="9" width="{233 * size / top[0][1]:.1f}" height="4" rx="2" fill="{colors[name]}" class="grow" '
-            f'style="animation-delay:{0.5 + i * 0.1:.2f}s"/></g>')
+            f'<rect x="22" y="9" width="{233 * size / top[0][1]:.1f}" height="4" rx="2" fill="{colors[name]}"'
+            f'/></g>')
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="600" height="320" viewBox="0 0 600 320" role="img" aria-label="Top languages">
 <defs>
   <linearGradient id="e" x1="0" x2="1"><stop offset="0" stop-color="{CYAN}"/><stop offset=".5" stop-color="{VIOLET}"/><stop offset="1" stop-color="{PINK}"/></linearGradient>
   <clipPath id="c"><rect x="30" y="70" width="540" height="12" rx="6"/></clipPath>
 </defs>
 <style>
-  .h {{ font: 800 20px {SANS}; fill:{TEXT}; }} .sub {{ font: 500 12px {MONO}; fill:{MUTED}; }}
+  .h {{ font: 600 18px {SANS}; fill:{TEXT}; }} .sub {{ font: 500 12px {MONO}; fill:{MUTED}; }}
   .n {{ font: 600 14px {SANS}; fill:{TEXT}; }} .p {{ font: 600 13px {MONO}; fill:{MUTED}; }}
-  .row {{ opacity:0; animation: fade .5s ease-out forwards; }}
-  .grow {{ transform-box: fill-box; transform-origin: left; transform: scaleX(0); animation: grow 1.1s ease-out forwards; }}
-  .bar {{ transform-box: fill-box; transform-origin: left; animation: grow 1.4s ease-out both; }}
-  @keyframes fade {{ to {{ opacity:1; }} }}
-  @keyframes grow {{ from {{ transform: scaleX(0); }} to {{ transform: scaleX(1); }} }}
 </style>
-<rect x="1" y="1" width="598" height="318" rx="16" fill="{SURFACE}" stroke="url(#e)" stroke-opacity=".5"/>
-<text x="30" y="44" class="h">Language Matrix</text>
-<text x="570" y="44" text-anchor="end" class="sub">{len(u['repositories']['nodes'])} public repos analysed</text>
+<rect x="1" y="1" width="598" height="318" rx="16" fill="{SURFACE}" stroke="{BORDER}"/>
+<text x="30" y="44" class="h">Most Used Languages</text>
+<text x="570" y="44" text-anchor="end" class="sub">based on {len(u['repositories']['nodes'])} public repositories</text>
 <g clip-path="url(#c)"><g class="bar">{''.join(bar)}</g></g>
 {''.join(rows)}
 </svg>

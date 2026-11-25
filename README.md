@@ -44,7 +44,7 @@ I'm a third-year Electrical and Electronics Engineering student at Ramaiah Insti
 - Fundamentals of Digital Design for VLSI Chip Design, L&T EduTech
 - Python Essentials 1, Cisco Networking Academy / OpenEDG
 
-## GitHub Activity
+## GitHub Stats
 
 <p>
   <img src="https://raw.githubusercontent.com/sleader3221-dot/sleader3221-dot/output/overview.svg" width="49%" alt="GitHub activity"/>
